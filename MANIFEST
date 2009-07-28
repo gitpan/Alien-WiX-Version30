@@ -1,0 +1,19 @@
+Build.PL
+Changes
+lib/Alien/WiX.pm
+lib/Alien/WiX/Version30.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/00_load.t
+t/01_main.t
+t/80_pod.t
+t/81_perlcritic.t
+t/83_minimumversion.t
+t/84_version.t
+t/85_meta.t
+t/86_manifest.t
+t/99_pod_coverage.t
+t/settings/perlcritic.txt
+t/settings/perltidy.txt

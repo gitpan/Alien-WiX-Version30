@@ -1,0 +1,35 @@
+---
+name: Alien-WiX-Version30
+version: 1.305419
+author:
+  - 'Curtis Jewell <csjewell@cpan.org>'
+abstract: Installing and finding Windows Installer XML (WiX)
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  LWP::UserAgent: 5.819
+  Module::Build: 0.280802
+requires:
+  Readonly: 1.03
+  Test::More: 0
+  Win32::TieRegistry: 0.26
+  Win32API::Registry: 0.30
+  perl: 5.008
+  version: 0.76
+recommends:
+  Readonly::XS: 1.05
+configure_requires:
+  Module::Build: 0.280802
+  Win32API::Registry: 0.30
+provides:
+  Alien::WiX:
+    file: lib/Alien/WiX.pm
+    version: 1.305419
+  Alien::WiX::Version30:
+    file: lib/Alien/WiX/Version30.pm
+    version: 5419.000
+generated_by: Module::Build version 0.34
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
