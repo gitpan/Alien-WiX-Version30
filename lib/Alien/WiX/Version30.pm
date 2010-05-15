@@ -9,9 +9,9 @@ use base qw( Exporter );
 use vars qw( $VERSION @EXPORT_OK %EXPORT_TAGS);
 use Readonly qw( Readonly );
 use Win32::TieRegistry qw( KEY_READ );
-use version; $VERSION = version->new('5419.0')->numify();
+use version; $VERSION = version->new('5419.1')->numify();
 
-# http://wix.sourceforge.net/releases/3.0.5419.0/Wix3.msi
+# http://wix.sourceforge.net/releases/3.0.5419.0/Wix3(-x64).msi
 
 Readonly my $WIX_REGISTRY_KEY =>
   'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows Installer XML/3.0';
@@ -31,9 +31,11 @@ sub import { ## no critic (RequireArgUnpacking)
 }
 
 sub _wix_registry {
+
+	# 0x200 = KEY_WOW64_32KEY
 	$_wix_registry ||= Win32::TieRegistry->new(
 		$WIX_REGISTRY_KEY => {
-			Access    => KEY_READ(),
+			Access    => KEY_READ() | 0x200,
 			Delimiter => q{/},
 		} );
 
@@ -143,10 +145,11 @@ Curtis Jewell  C<< <csjewell@cpan.org> >>
 Copyright (c) 2009, Curtis Jewell.
 
 This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
+modify it under the same terms as Perl itself. See 
+L<perlartistic|perlartistic>.
 
-The software installed by this module has its own licenses and copyrights, and is
-not included in this license and copyright.
+The software installed by this module has its own licenses and copyrights, 
+and is not included in this license and copyright.
 
 =head1 DISCLAIMER OF WARRANTY
 
@@ -170,3 +173,21 @@ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
 FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
+
+=begin Pod::Coverage
+
+wix_version
+
+wix_version_number
+
+wix_binary
+
+wix_library
+
+wix_bin_candle
+
+wix_bin_light
+
+wix_lib_wixui 
+
+=end Pod::Coverage

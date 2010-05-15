@@ -6,11 +6,11 @@ use strict;
 use Carp;
 use base qw( Exporter );
 use vars qw( $VERSION @EXPORT_OK %EXPORT_TAGS);
-use version; $VERSION = version->new('1.305419')->numify();
+use version; $VERSION = version->new('1.305419001')->numify();
 
 eval { require Alien::WiX::Version35; 1; } or eval {
 	require Alien::WiX::Version30;
-	Alien::WiX::Version30->VERSION(5419.0);
+	Alien::WiX::Version30->VERSION(5419.1);
 	1;
 }
   or croak @_;
@@ -46,7 +46,7 @@ Alien::WiX - Installing and finding Windows Installer XML (WiX)
 
 =head1 VERSION
 
-This document describes Alien::WiX version 1.305419.
+This document describes Alien::WiX version 1.305419001.
 
 Note that the first digit will change if the API changes 
 in an incompatible or major manner, while the other digits change 
@@ -108,7 +108,9 @@ The '.exe' part is not required.
 Returns the location of the WiX extension library specified as its first parameter.
 The 'Extension.dll' part is not required.
 
-=head2 wix_bin_candle, wix_bin_light
+=head2 wix_bin_candle
+
+=head2 wix_bin_light
 
 Returns the location of candle.exe or light.exe.
 
@@ -150,11 +152,12 @@ that it successfully executes.
 
 This module requires Perl 5.8.0.
 
-Non-core perl modules required are L<Win32API::Registry>
+Non-core perl modules required are L<Win32API::Registry|Win32API::Registry>
 (which is required to be installed in order to run the 
-Makefile.PL or Build.PL successfully), L<Module::Build> 
+Makefile.PL or Build.PL successfully), L<Module::Build|Module::Build> 
 (which is required to install this module), 
-L<Win32::TieRegistry>, L<version>, and L<Readonly>.
+L<Win32::TieRegistry|Win32::TieRegistry>, L<version|version>, 
+and L<Readonly|Readonly>.
 
 Installation of Alien::WiX will install Microsoft .NET Framework 2.0 SP1 
 and Windows Installer XML 3.0.5419.0 by downloading them from the 
@@ -170,7 +173,7 @@ it yourself before installing this module.
 No bugs have been reported.
 
 Please report any bugs or feature requests to
-C<bug-Alien-WiX@rt.cpan.org>, or through the web interface at
+C<bug-Alien-WiX-Version30@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
 =head1 AUTHOR
@@ -182,7 +185,8 @@ Curtis Jewell  C<< <csjewell@cpan.org> >>
 Copyright (c) 2009, Curtis Jewell.
 
 This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
+modify it under the same terms as Perl itself. See 
+L<perlartistic|perlartistic>.
 
 The software installed by this module has its own licenses and copyrights, and is
 not included in this license and copyright.

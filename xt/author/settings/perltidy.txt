@@ -37,6 +37,3 @@
 --long-block-line-count=4
 --maximum-consecutive-blank-lines=5
 
-
-
-

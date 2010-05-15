@@ -1,6 +1,7 @@
 use warnings;
 use English '-no_match_vars';
 use Module::Build 0.280802;
+use Config;
 	
 die "OS unsupported" if ('MSWin32' ne $OSNAME);
 
@@ -8,11 +9,16 @@ my $class = Module::Build->subclass(
 
 	class => 'ModuleBuildAlienWiX',
 	code => q{
+		use Config;
+	
 		sub ACTION_code {
             my $self = shift;
             my $install_dotnet = $self->notes('install_dotnet');
             my $install_wix = $self->notes('install_wix');
             my $WIX_URL = 'http://wix.sourceforge.net/releases/3.0.5419.0/Wix3.msi';
+			if ($Config{archname} =~ /MSWin32-x64/) {
+				$WIX_URL = 'http://wix.sourceforge.net/releases/3.0.5419.0/Wix3_x64.msi';
+			}
             my $NET20_URL = 'http://download.microsoft.com/download/0/8/c/08c19fa4-4c4f-4ffb-9d6c-150906578c9e/NetFx20SP1_x86.exe';
 			require Win32;
             my $NET20_FILE = Win32::GetShortPathName($ENV{TEMP}) . '\NetFx20SP1_x86.exe';
@@ -24,7 +30,7 @@ my $class = Module::Build->subclass(
 				# Need to get the file manually - it's not an MSI.
 				require LWP::UserAgent;
 				my $ua = LWP::UserAgent->new;
-				$ua->agent('Alien-WiX/0.305419 ');
+				$ua->agent('Alien-WiX/1.305419 ');
 				my $r = $ua->mirror( $NET20_URL, $NET20_FILE );
 				if ( $r->is_error ) {
 					print "Error getting $NET20_URL: " . $r->as_string . "\n";
@@ -61,6 +67,46 @@ my $class = Module::Build->subclass(
             
             $self->SUPER::ACTION_code();
         }
+
+		
+		sub ACTION_authortest {
+			my ($self) = @_;
+
+			$self->depends_on('build');
+			$self->depends_on('manifest');
+			$self->depends_on('distmeta');
+
+			$self->test_files( qw< t xt/author > );
+			$self->depends_on('test');
+
+			return;
+		}
+
+
+		sub ACTION_releasetest {
+			my ($self) = @_;
+
+			$self->depends_on('build');
+			$self->depends_on('manifest');
+			$self->depends_on('distmeta');
+
+			$self->test_files( qw< t xt/author xt/release > );
+			$self->depends_on('test');
+
+			return;
+		}
+
+
+		sub ACTION_manifest {
+			my ($self, @arguments) = @_;
+
+			if (-e 'MANIFEST') {
+				unlink 'MANIFEST' or die "Can't unlink MANIFEST: $!";
+			}
+
+			return $self->SUPER::ACTION_manifest(@arguments);
+		}
+
     }
 );
 
@@ -71,23 +117,23 @@ my $builder = $class->new(
     dist_author         => 'Curtis Jewell <csjewell@cpan.org>',
     dist_version_from   => 'lib/Alien/WiX.pm',
     configure_requires  => {
-		'Win32API::Registry'
-		                => '0.30',
-		'Module::Build'
-		                => '0.280802',
-	},
+        'Win32API::Registry'
+                        => '0.30',
+        'Module::Build'
+                        => '0.280802',
+    },
     build_requires  => {
-		'Module::Build'
-		                => '0.280802',
-		'LWP::UserAgent'
-						=> '5.819',
-	},
-	requires            => {
-		'perl'          => '5.008',
-        'Test::More'    => '0',
-		'Readonly'      => '1.03',
+        'Module::Build'
+                        => '0.280802',
+        'LWP::UserAgent'
+                        => '5.819',
+        'Test::More'    => '0.88',
+    },
+    requires            => {
+        'perl'          => '5.008',
+        'Readonly'      => '1.03',
         'version'       => '0.76',
-		'Win32API::Registry'
+        'Win32API::Registry'
 		                => '0.30',
 		'Win32::TieRegistry'
 		                => '0.26',
@@ -95,7 +141,16 @@ my $builder = $class->new(
 	recommends          => {
 		'Readonly::XS'  => '1.05',
 	},
-	create_makefile_pl  => 'passthrough',
+	create_makefile_pl  => 'small',
+	meta_merge => {
+		resources => {
+			homepage => 'http://csjewell.comyr.com/',
+			bugtracker =>
+'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Alien-WiX-Version30',
+			repository =>
+			  'http://svn.ali.as/cpan/trunk/Alien-WiX/'
+		},
+	},
     add_to_cleanup      => [ 'Alien-WiX-Version30-*' ],
 );
 
@@ -144,7 +199,8 @@ $installed = 0;
 $default = 'y';
 $answer = 0;
 
-if (RegOpenKeyEx( regConstant('HKEY_LOCAL_MACHINE'), $WIX30_REGISTRY_KEY, 0, regConstant('KEY_READ'), $key ))
+# 0x200 = KEY_WOW64_32KEY.
+if (RegOpenKeyEx( regConstant('HKEY_LOCAL_MACHINE'), $WIX30_REGISTRY_KEY, 0, regConstant('KEY_READ') | 0x200, $key ))
 {
 	if (RegQueryValueEx( $key, 'ProductVersion', [], $type, $data, [] )) {
 		if ($data =~ m/3.0.(\d+).0/) {
